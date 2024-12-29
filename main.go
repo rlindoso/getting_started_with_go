@@ -84,4 +84,69 @@ func main() {
 
 	melina.printDog()
 	ranni.printDog()
+
+	var pointerRanni *Dog = &ranni
+	pointerRanni.Age = 4
+
+	fmt.Println(pointerRanni.Age)
+	fmt.Println(ranni.Age)
+
+	ranni.Age = 5
+
+	fmt.Println(pointerRanni.Age)
+	fmt.Println(ranni.Age)
+
+	go showMessage()
+	fmt.Println("This message will appear before the message from showMessage")
+	// time.Sleep(1 * time.Second)
+
+	go meet.SayHello()
+	time.Sleep(500 * time.Millisecond)
+
+	ch := make(chan int, 3)
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			ch <- i
+		}
+		close(ch)
+
+		fmt.Println("End of write")
+	}()
+
+	value := <-ch
+	fmt.Println("Value from chanel:", value)
+	fmt.Println("Nexts values from chanel")
+
+	for i := range ch {
+		fmt.Println("Value from chanel:", i)
+	}
+
+	channel := make(chan int)
+	go producer(channel)
+	go consumer(channel)
+	go consumer(channel)
+	go consumer(channel)
+
+	time.Sleep(time.Second * 1)
+}
+
+func showMessage() {
+	fmt.Println("Hello from goroutine!")
+}
+
+func producer(ch chan int) {
+	for i := 0; i < 30; i++ {
+		ch <- i
+	}
+	close(ch)
+
+	fmt.Println("End of producer write")
+}
+
+func consumer(ch chan int) {
+	for i := range ch {
+		fmt.Println("Value from new chanel:", i)
+	}
+	fmt.Println("End of consumer reading")
 }
